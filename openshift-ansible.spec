@@ -9,15 +9,16 @@
 %global __requires_exclude ^/usr/bin/ansible-playbook$
 
 Name:           openshift-ansible
-Version:        3.11.90
+Version:        3.11.112
 Release:        1%{?dist}
 Summary:        Openshift and Atomic Enterprise Ansible
 License:        ASL 2.0
 URL:            https://github.com/openshift/openshift-ansible
 Source0:        https://github.com/openshift/openshift-ansible/archive/%{commit}/%{name}-%{version}.tar.gz
 BuildArch:      noarch
-
-Requires:      ansible >= 2.6
+# We expect most to run >= 2.6 but there are some module dependency conflicts
+# in openstack modules for 2.6 that are nearly impossible to resolve so tolerate 2.5.7
+Requires:      ansible >= 2.5.7
 Requires:      python2
 Requires:      python-six
 Requires:      tar
@@ -189,6 +190,207 @@ BuildArch:     noarch
 %{_datadir}/ansible/%{name}/test
 
 %changelog
+* Thu May 02 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.112-1
+- Update Fuse templates with 7.3 release (antonin@stefanutti.fr)
+- Fix container registry block all not blocking all registries
+  (jcallen@redhat.com)
+- Fix typo in Cisco ACI roles (jbanerje@cisco.com)
+
+* Tue Apr 30 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.111-1
+- Replace remote_group_id by remote_ip_prefix (ltomasbo@redhat.com)
+- openshift_node: Allow storage_plugin tasks to work through import_role
+  (jarrpa@redhat.com)
+- GlusterFS: Set max-op-version at end of upgrade (jarrpa@redhat.com)
+- GlusterFS: Fix old-style relabeling (jarrpa@redhat.com)
+- SDN: tolerate taints (vrutkovs@redhat.com)
+- Correct usage of openshift_facts (rteague@redhat.com)
+- Fix openshift_logging set_fact FAILED in python3 (wu-wenixang@outlook.com)
+- Removing quotes while executing few aci related shell commands
+  (Gaurav.Dalvi@users.noreply.github.com)
+- Correctly evaluate openshift_metrics_heapster_standalone variable if it is
+  'false' with small f (jmartisk@redhat.com)
+- Add --debug flag to skopeo inspect in image health check.
+  (padillon@redhat.com)
+
+* Tue Apr 23 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.110-1
+- imageconfig playbook fails with undefined variables (jcallen@redhat.com)
+- Move modify_yaml test to appropriate directory (rteague@redhat.com)
+- glusterfs: Update iSCSI config as part of upgrade (jarrpa@redhat.com)
+- glusterfs: Update glusterfs-fuse package as part of upgrade
+  (jarrpa@redhat.com)
+- glusterfs: Only check for heketi pod when it may be missing
+  (jarrpa@redhat.com)
+- glusterfs: Minor fixes to upgrade playbook (jarrpa@redhat.com)
+- Add nodeName to node-config template for azure (jcallen@redhat.com)
+- Stop gathering Ansible facts in openshift_facts (rteague@redhat.com)
+- bug 1695903. Pass token from logging proxy to es for metrics
+  (jcantril@redhat.com)
+
+* Sun Apr 21 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.109-1
+- 
+
+* Thu Apr 18 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.108-1
+- OWNERS File Audit (rteague@redhat.com)
+- Test using Ansible 2.7.10 (rteague@redhat.com)
+- Update openshift_facts facts gathering (rteague@redhat.com)
+- #10765 Update installation doc link for release-3.11
+  (nikolas.philips@baloise.ch)
+
+* Tue Apr 16 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.107-1
+- openshift_ovirt: Fix hostname in the inventory groups (rgolan@redhat.com)
+- Fix serviceaccounts' secrets for Metrics (jmartisk@redhat.com)
+
+* Sun Apr 14 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.106-1
+- Fixes NotReady nodes after ca and certificate update (jcallen@redhat.com)
+- Ensure master vars are passed to openshift_facts on upgrade
+  (vrutkovs@redhat.com)
+- Console cert redeploy: rerun install (vrutkovs@redhat.com)
+
+* Thu Apr 11 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.105-1
+- Update roles/openshift_logging_elasticsearch/tasks/main.yaml
+  (roignac@gmail.com)
+- Update main.yaml (crmarquesjc@gmail.com)
+
+* Wed Apr 10 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.104-1
+- Change the cni-cleanup file path to /etc (gabriel.mainberger@vshn.net)
+- Backport of #10173 (egarcia@redhat.com)
+- openshift_ovirt: fix inventory creation of multi nodes (rgolan@redhat.com)
+- Update README.md (onurserdarosman@gmail.com)
+- Add playbooks to regenerate secrets for openshift-monitoring
+  (vrutkovs@redhat.com)
+- OLM: use olm_operator_version as a tag for Origin images
+  (vrutkovs@redhat.com)
+- tmpfile.d file clears the cni config on boot (pcameron@redhat.com)
+- BZ1695856 - redeploy certificates fails if use_crio_only (jcallen@redhat.com)
+- Option to add and annotate namespaces for openshift-service-catalog (apomitta
+  @apoorva-vm1.local.lan)
+- BZ1694106 - Update crictl.yaml runtime-endpoint config to resolve warning
+  (jcallen@redhat.com)
+- Remove block storageclass (crmarquesjc@gmail.com)
+- openshift_ovirt: Support setting mac_address in the manifest
+  (rgolan@redhat.com)
+- [KIECLOUD-110] - Update RHDM and RHPAM 7.30 templates on OCP and OSO service
+  catalog (fspolti@redhat.com)
+- [KIECLOUD-171] - Update Application templates and imagestreams on OCP for
+  RHDS and RHIPS (fspolti@redhat.com)
+- Revert "bug 1666674. Add Kibana sar and delegate url for auth-delegator"
+  (jcantril@redhat.com)
+- test/deprovision: retry attempts to destroy instances and SG
+  (vrutkovs@redhat.com)
+- Providing default oreg_url for validation (philippe@dellaert.org)
+- Update kube-rbac-proxy to v0.4.1 (vrutkovs@redhat.com)
+- ASB: use `${version}` in default image (vrutkovs@redhat.com)
+- Satellite image URL can be worked in example template image url replacement.
+  (bysnupy@hotmail.com)
+
+* Sun Mar 31 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.103-1
+- Linting fixes in playbooks and roles (vikash.kumar@oneconvergence.com)
+- Updating OWNERS (jcallen@redhat.com)
+- Remove papr test files (rteague@redhat.com)
+- Re-apply tuned profile during upgrade (rteague@redhat.com)
+- lib_utils to parse *_storage_host variables with get_templated
+  (jstuever@redhat.com)
+- Cisco ACI CNI Plugin support (sumitnaiksatam@gmail.com)
+
+* Thu Mar 28 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.102-1
+- bz1690900: no longer install etcd on masters (jstuever@redhat.com)
+- Wait for ServiceMonitor CRD to be created should have configurable retries
+  and delays (vrutkovs@redhat.com)
+- [release-3.11] Do not include enterprise registry unless available in
+  oreg_url (jcallen@redhat.com)
+
+* Tue Mar 26 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.101-1
+- Update examples-sync.sh to use XPAAS_VERSION ose-v1.4.18 (ken@zaptillion.net)
+- Update EAP 7.1 and 6.4 imagestreams and templates (ken@zaptillion.net)
+- Teardown: remove security using cluster ID tag (vrutkovs@redhat.com)
+
+* Sun Mar 24 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.100-1
+- Modify lib_utils_oo_oreg_image filter to work against Satellite url pattern
+  (bysnupy@hotmail.com)
+
+* Thu Mar 21 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.99-1
+- remove dash causing syntax error in kibana install role
+  (marriott_robert@bah.com)
+- bug 1666674. Add Kibana sar and delegate url for auth-delegator
+  (jcantril@redhat.com)
+
+* Tue Mar 19 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.98-1
+- Bug 1689149 - adding secret names to SA for whitelisting
+  (ewolinet@redhat.com)
+- Calico: Add support for environment variable IP_AUTODETECTION_METHOD
+  (steve.teuber@idealo.de)
+
+* Sun Mar 17 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.97-1
+- Change the example docker_version for 3.9 and higher
+  (gabriel.mainberger@vshn.net)
+
+* Thu Mar 14 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.96-1
+- Update origin and dotnet content (sdodson@redhat.com)
+- add race condition protection when creating projects (tzumainn@redhat.com)
+- Rely on oc_adm_policy_user to fully qualify things (sdodson@redhat.com)
+- don't tolerate absence of resource type (sdodson@redhat.com)
+- Don't rely on aliases after restarting apiservers (sdodson@redhat.com)
+
+* Tue Mar 12 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.95-1
+- Include dedicated etcd in upgrade if they are nodes (rteague@redhat.com)
+- Redeploy admin console certificates when master certs are updated
+  (vrutkovs@redhat.com)
+- bug 1660956. Add container name to elasticsearch exec call
+  (jcantril@redhat.com)
+- openshift-sync: tolerate absence of KUBELET_HOSTNAME_OVERRIDE
+  (sdodson@redhat.com)
+- bug 1676720. Check for curator cronjob (jcantril@redhat.com)
+- Increase etcd quota to 8GB. (jnovy@redhat.com)
+- Fix version_requirement callback plugin (rteague@redhat.com)
+- Encode the cert when loading it (waseemhassanshahid@gmail.com)
+- Update roles/openshift_examples/files/examples/x86_64/xpaas-streams/eap-cd-
+  image-stream.json (roignac@gmail.com)
+- Add EAP CD 15 to xpass templates (ken@zaptillion.net)
+
+* Sun Mar 10 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.94-1
+- sdn: respect DEBUG_LOGLEVEL as written out by the "Configure Node settings"
+  task (dcbw@redhat.com)
+- Fix validation of values in image_policy_allowed_registries_for_import
+  (vrutkovs@redhat.com)
+- Don't start/stop docker when openshift_use_crio_only (sdodson@redhat.com)
+
+* Thu Mar 07 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.93-1
+- Simplify DaemonSet Update (rteague@redhat.com)
+- Remove runhour and runminute from curator config sample (bysnupy@hotmail.com)
+- Ensure kuryr has its own namespace (ltomasbo@redhat.com)
+- Adding new kuryr handler to avoid races (ltomasbo@redhat.com)
+- Logs are already being shipped to journald (jgallego@redhat.com)
+- fluentd: tolerate all taints (jdesousa@redhat.com)
+- Fix typo mistake: appliction 2 application. (jmferrer@paradigmadigital.com)
+- Relax version requirements (sdodson@redhat.com)
+- bug 1685618. Modify default_md for logging cert generation bug 1685655.
+  Update key size for logging cert generation (jcantril@redhat.com)
+- Remove hidden tag for latest Fuse builders #11292 (apupier@redhat.com)
+- Make sure that the user we expect has proper credentials set.
+  (rhowe@redhat.com)
+
+* Wed Mar 06 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.92-1
+- Include iscsi storage only on non-atomic host installs. (pdd@redhat.com)
+- additional provider network/octavia documentation (tzumainn@redhat.com)
+- In atomic host, multipath file does not exists. Use the result while adding
+  LIO-ORG section as well. (sarumuga@redhat.com)
+- Add lbaas check to router subnet (tzumainn@redhat.com)
+- added provisioner file path parameter to template (marriott_robert@bah.com)
+- Set AWS_CA_BUNDLE via openshift_cloudprovider_aws_ca_bundle
+  (sdodson@redhat.com)
+- sanity checks: avoid extra hostvar lookups (vrutkovs@redhat.com)
+- Bug 1671315 - Kibana and Curator pods names are with ops
+  (rmeggins@redhat.com)
+
+* Sun Mar 03 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.91-1
+- Require ansible 2.6, allow ansible 2.7 (vrutkovs@redhat.com)
+- Use correct Data Grid version (galder@zamarreno.com)
+- Adding docker as waagent systemd dependency (kwoodson@redhat.com)
+- Prevent OpenStack heat from trying to create router when provider network is
+  specified (tzumainn@redhat.com)
+- fixing docs to match actual defaults (mharri@redhat.com)
+- Correct service serving secret name in the annotation (bysnupy@hotmail.com)
+
 * Thu Feb 28 2019 AOS Automation Release Team <aos-team-art@redhat.com> 3.11.90-1
 - Add Data Grid 7.3 to OpenShift Cloud Platform (galder@zamarreno.com)
 - Handle null values and multiple certs when checking namedCertificates.

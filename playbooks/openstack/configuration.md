@@ -23,7 +23,6 @@ Environment variables may also be used.
 * [Kuryr Networking Configuration](#kuryr-networking-configuration)
 * [Provider Network Configuration](#provider-network-configuration)
 * [Multi-Master Configuration](#multi-master-configuration)
-* [Provider Network Configuration](#provider-network-configuration)
 * [Cinder-Backed Persistent Volumes Configuration](#cinder-backed-persistent-volumes-configuration)
 * [Cinder-Backed Registry Configuration](#cinder-backed-registry-configuration)
 * [Swift or Ceph Rados GW Backed Registry Configuration](#swift-or-ceph-rados-gw-backed-registry-configuration)
@@ -923,6 +922,10 @@ In `inventory/group_vars/all.yml`:
 
 * `openshift_openstack_provider_network_name` Provider network name. Setting this will cause the `openshift_openstack_external_network_name` and `openshift_openstack_private_network_name` parameters to be ignored.
 
+If you are using Octavia as the load balancer, set the following as well:
+
+* `openshift_openstack_node_subnet_name`
+* `openshift_openstack_load_balancer_floating_ip: false`
 
 ## Cinder-Backed Persistent Volumes Configuration
 
@@ -1285,4 +1288,74 @@ acf2afc99b950       registry.redhat.io/openshift3/ose-node@sha256:3da731d733cd4d
 6814b5f7a05d7       registry.redhat.io/openshift3/ose-node@sha256:3da731d733cd4d67897d22bfdcb027b009494de667bd7a3c870557102ce10bf5                   41 minutes ago      Running             sdn                 0
 [openshift@app-node-0 ~]$ sudo docker ps
 sudo: docker: command not found
+```
+
+## Opening Optional Ports
+There are certian optional and legacy features that require ports to be opened. The code provided in the following sections can be used to enable these features.
+
+### Metrics
+If you want to enable metrics in your openshift cluster, then port 10255 must be open on all nodes in the cluster. The following code should be added to openshift_openstack_node_secgroup_rules in main.yml.
+
+```
+  - direction: ingress
+    protocol: tcp
+    port_range_min: 10255
+    port_range_max: 10255
+  - direction: ingress
+    protocol: udp
+    port_range_min: 10255
+    port_range_max: 10255
+```
+
+### Prometheus
+The following code to open ports for prometheus should also be added to the openshift_openstack_node_secgroup_rules section of main.yml.
+
+```
+  - direction: ingress
+    protocol: tcp
+    port_range_min: 9100
+    port_range_max: 9100
+```
+
+### Elastic Search
+Add this to the openshift_openstack_node_secgroup_rules section of main.yml to enable elastic search.
+
+```
+  - direction: ingress
+    protocol: tcp
+    port_range_min: 9200
+    port_range_max: 9200
+  - direction: ingress
+    protocol: tcp
+    port_range_min: 9300
+    port_range_max: 9300
+```
+
+### Using Pacemaker HA
+If you choose to use Pacemaker to manage the HA system on the master nodes, the following changes should be made to the openshift_openstack_master_secgroup_rules section.
+
+```
+  - direction: ingress
+    protocol: tcp
+    port_range_min: 2224
+    port_range_max: 2224
+  - direction: ingress
+    protocol: udp
+    port_range_min: 5404
+    port_range_max: 5405
+```
+
+The following Documentation may prove helpful as well:
+- https://docs.openshift.com/enterprise/3.1/architecture/infrastructure_components/kubernetes_infrastructure.html#high-availability-masters
+- https://docs.openshift.com/enterprise/3.1/install_config/upgrading/pacemaker_to_native_ha.html
+
+### Template Router
+If you are running a template router to expose your statistics, there are a few changes you need to make. First, add this to main.yml under the openshift_openstack_infra_secgroup_rules section.
+
+```
+  # Required when running template router to access statistics
+  - direction: ingress
+    protocol: tcp
+    port_range_min: 1936
+    port_range_max: 1936
 ```

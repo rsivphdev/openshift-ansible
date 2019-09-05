@@ -1,0 +1,40 @@
+#bare minimum hostfile
+
+[OSEv3:children]
+masters
+nodes
+etcd
+
+[OSEv3:vars]
+# if your target hosts are Fedora uncomment this
+#ansible_python_interpreter=/usr/bin/python3
+openshift_deployment_type=origin
+openshift_portal_net=172.30.0.0/16
+# localhost likely doesn't meet the minimum requirements
+openshift_disable_check=disk_availability,memory_availability,docker_image_availability
+# openshift_disable_check=disk_availability,memory_availability
+
+openshift_node_groups=[{'name': 'node-config-all-in-one', 'labels': ['node-role.kubernetes.io/master=true', 'node-role.kubernetes.io/infra=true', 'node-role.kubernetes.io/compute=true']}]
+
+openshift_master_default_subdomain=ocp.bitbox.ca
+openshift_master_cluster_hostname=ocp.bitbox.ca
+openshift_master_cluster_public_hostname=ocp.bitbox.ca
+osm_default_subdomain=ocp.bitbox.ca
+#openshift_master_named_certificates=[{"certfile": "/home/dkerins/server.crt", "keyfile": "/home/dkerins/server.crt"}]
+
+# htpasswd auth
+openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
+# Defining htpasswd users
+#openshift_master_htpasswd_users={'david-kerins': '$apr1$nSJ0avs7$GqbJFdGNXb2pBmmRIlxvX/', 'cluster-admin': '$apr1$gO1A1Qez$knGRsm/sXJOYZ6EPawi9G.', 'developer': '$apr1$ZMgEOvZ/$Dkwyzf4193fMjVpVyPXBg0'}
+# or
+openshift_master_htpasswd_file=/etc/htpasswd
+
+[masters]
+localhost ansible_connection=local
+
+[etcd]
+localhost ansible_connection=local
+
+[nodes]
+# openshift_node_group_name should refer to a dictionary with matching key of name in list openshift_node_groups.
+localhost ansible_connection=local openshift_node_group_name="node-config-all-in-one"
